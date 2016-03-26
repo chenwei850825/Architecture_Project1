@@ -328,11 +328,12 @@ void execution::I_type()
         {
 
 
-        overflow = declaration::reg[rsNow] + immediateSigned;
+        overflow = declaration::reg[rsNow] + immediateSigned + 3;
         if( overflow >= 1024 ){
             declaration::memoryOverflow = 1;
             declaration::halt = 1;
         }
+        overflow = declaration::reg[rsNow] + immediateSigned;
         if( overflow % 4 != 0 ){
             declaration::dataMisalign = 1;
             declaration::halt = 1;
@@ -369,11 +370,12 @@ void execution::I_type()
     {
 
 
-        overflow = declaration::reg[rsNow] + immediateSigned;
+        overflow = declaration::reg[rsNow] + immediateSigned + 1;
         if( overflow >= 1024 ){
             declaration::memoryOverflow = 1;
             declaration::halt = 1;
         }
+        overflow = declaration::reg[rsNow] + immediateSigned;
         if( overflow % 2 != 0 ){
             declaration::dataMisalign = 1;
             declaration::halt = 1;
@@ -401,6 +403,7 @@ void execution::I_type()
                 idy--;
             }
         }
+
         declaration::reg[rtNow] = bitset_to_long(tmp);
         cout << "lh" << endl;
         break;
@@ -409,11 +412,12 @@ void execution::I_type()
     case LHU:
     {
 
-        overflow = declaration::reg[rsNow] + immediateSigned;
+        overflow = declaration::reg[rsNow] + immediateSigned + 1;
         if( overflow >= 1024 ){
             declaration::memoryOverflow = 1;
             declaration::halt = 1;
         }
+        overflow = declaration::reg[rsNow] + immediateSigned;
         if( overflow % 2 != 0 ){
             declaration::dataMisalign = 1;
             declaration::halt = 1;
@@ -527,11 +531,12 @@ void execution::I_type()
     case SW:
     {
 
-        overflow = declaration::reg[rsNow] + immediateSigned;
+        overflow = declaration::reg[rsNow] + immediateSigned + 3;
         if( overflow >= 1024 ){
             declaration::memoryOverflow = 1;
             declaration::halt = 1;
         }
+        overflow = declaration::reg[rsNow] + immediateSigned;
         if( overflow % 4 != 0 ){
             declaration::dataMisalign = 1;
             declaration::halt = 1;
@@ -563,11 +568,12 @@ void execution::I_type()
     case SH:
     {
 
-        overflow = declaration::reg[rsNow] + immediateSigned;
+        overflow = declaration::reg[rsNow] + immediateSigned + 1;
         if( overflow >= 1024 ){
             declaration::memoryOverflow = 1;
             declaration::halt = 1;
         }
+        overflow = declaration::reg[rsNow] + immediateSigned;
         if( overflow % 2 != 0 ){
             declaration::dataMisalign = 1;
             declaration::halt = 1;

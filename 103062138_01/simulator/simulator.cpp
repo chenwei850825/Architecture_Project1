@@ -7,13 +7,15 @@ using namespace std;
 int main(void)
 {
     loading loads;
+    loads.load();
+
     execution exe;
     result results;
     fstream outputs, errors;
     outputs.open("snapshot.rpt", ios::out | ios::binary );
     errors.open("error_dump.rpt", ios::out | ios::binary );
 
-    loads.load();
+ 
     while(1){
 
         results.output(outputs);
