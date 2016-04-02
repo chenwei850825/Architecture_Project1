@@ -12,15 +12,19 @@ long x:
 }
 
 
+
 execution::execution()
 {
-    ;
+
+    //test.open( "//test1.out", ios::out | ios::binary );
 }
 
 void execution::fetch(int PC)
 {
     instruction = declaration::iMemory[ PC >> 2 ];
-    //cout << instruction << endl;
+    /*if( declaration::cycle == 150 )
+        cout << instruction << endl;*/
+    ////test << instruction << endl;
 }
 
 
@@ -33,7 +37,7 @@ void execution::decode_execute()
         idx++;
     }
 
-    cout << opcode << endl;
+    ////test << opcode << endl;
 
     //R-type
     if( opcode == 0x00 )
@@ -69,7 +73,7 @@ void execution::decode_execute()
             idx++;
         }
         R_type();
-        //cout << opcode << rs << rt << rd << shamt << funct << endl;
+        ////test << opcode << rs << rt << rd << shamt << funct << endl;
 
     }
 
@@ -83,7 +87,7 @@ void execution::decode_execute()
             idx++;
         }
         J_type ( );
-        //cout << opcode << address << endl;
+        ////test << opcode << address << endl;
     }
 
     //Terminal-type
@@ -96,7 +100,7 @@ void execution::decode_execute()
             idx++;
         }
         terminal_type();
-        //cout << opcode << address << endl;
+        ////test << opcode << address << endl;
     }
 
     //I-type
@@ -121,7 +125,7 @@ void execution::decode_execute()
             idx++;
         }
         I_type();
-        //cout << opcode << rs << rt << immediate << endl;
+        ////test << opcode << rs << rt << immediate << endl;
     }
 }
 
@@ -142,9 +146,9 @@ void execution::R_type()
     case ADD:
 
         overflow = declaration::reg[rsNow] + declaration::reg[rtNow];
-        if( declaration::reg[rsNow] > 0 && declaration::reg[rtNow] > 0 && overflow < 0 )
+        if( declaration::reg[rsNow] > 0 && declaration::reg[rtNow] > 0 && overflow <= 0 )
             declaration::numberOverflow = 1;
-        else if( declaration::reg[rsNow] < 0 && declaration::reg[rtNow] < 0 && overflow > 0 )
+        else if( declaration::reg[rsNow] < 0 && declaration::reg[rtNow] < 0 && overflow >= 0 )
             declaration::numberOverflow = 1;
         if( rdNow == 0 ){
             declaration::writeToZero = 1;
@@ -152,7 +156,7 @@ void execution::R_type()
         }
 
         declaration::reg[rdNow] = declaration::reg[rsNow] + declaration::reg[rtNow];
-        cout << "add" << endl;
+        //test << "add" << endl;
         break;
     case ADDU:
 
@@ -162,23 +166,27 @@ void execution::R_type()
         }
 
         declaration::reg[rdNow] = declaration::reg[rsNow] + declaration::reg[rtNow];
-        cout << "addu" << endl;
+        //test << "addu" << endl;
         break;
     case SUB:
+        {
 
-        overflow = declaration::reg[rsNow] - declaration::reg[rtNow];
-        if( declaration::reg[rsNow] > 0 && declaration::reg[rtNow] < 0 && overflow < 0 )
+        int complement = - ( declaration::reg[rtNow] );
+        overflow = declaration::reg[rsNow] + complement;
+        if( declaration::reg[rsNow] > 0 && complement > 0 && overflow <= 0 )
             declaration::numberOverflow = 1;
-        else if( declaration::reg[rsNow] < 0 && declaration::reg[rtNow] > 0 && overflow > 0 )
+        else if( declaration::reg[rsNow] < 0 && complement < 0 && overflow >= 0 )
             declaration::numberOverflow = 1;
         if( rdNow == 0 ){
             declaration::writeToZero = 1;
             break;
         }
 
-        declaration::reg[rdNow] = declaration::reg[rsNow] - declaration::reg[rtNow];
-        cout << "sub" << endl;
+        declaration::reg[rdNow] = declaration::reg[rsNow] + complement;
+        //test << "sub" << endl;
         break;
+
+        }
     case AND:
 
         if( rdNow == 0 ){
@@ -187,7 +195,7 @@ void execution::R_type()
         }
 
         declaration::reg[rdNow] = declaration::reg[rsNow] & declaration::reg[rtNow];
-        cout << "and" << endl;
+        //test << "and" << endl;
         break;
     case OR:
 
@@ -197,7 +205,7 @@ void execution::R_type()
         }
 
         declaration::reg[rdNow] = declaration::reg[rsNow] | declaration::reg[rtNow];
-        cout << "or" << endl;
+        //test << "or" << endl;
         break;
     case XOR:
 
@@ -207,7 +215,7 @@ void execution::R_type()
         }
 
         declaration::reg[rdNow] = declaration::reg[rsNow] ^ declaration::reg[rtNow];
-        cout << "xor" << endl;
+        //test << "xor" << endl;
         break;
     case NOR:
 
@@ -217,7 +225,7 @@ void execution::R_type()
         }
 
         declaration::reg[rdNow] = ~( declaration::reg[rsNow] | declaration::reg[rtNow] ) ;
-        cout << "nor" << endl;
+        //test << "nor" << endl;
         break;
     case NAND:
 
@@ -227,7 +235,7 @@ void execution::R_type()
         }
 
         declaration::reg[rdNow] = ~( declaration::reg[rsNow] & declaration::reg[rtNow] );
-        cout << "nand" << endl;
+        //test << "nand" << endl;
         break;
     case SLT:
 
@@ -237,7 +245,7 @@ void execution::R_type()
         }
 
         declaration::reg[rdNow] = ( declaration::reg[rsNow] < declaration::reg[rtNow] );
-        cout << "slt" << endl;
+        //test << "slt" << endl;
         break;
     case SLL:
 
@@ -249,8 +257,8 @@ void execution::R_type()
             }
         }
 
-        declaration::reg[rdNow] = declaration::reg[rtNow] << shamtNow;
-        cout << "sll" << endl;
+        declaration::reg[rdNow] = (unsigned)declaration::reg[rtNow] << shamtNow;
+        //test << "sll" << endl;
         break;
     case SRL:
 
@@ -259,8 +267,8 @@ void execution::R_type()
             break;
         }
 
-        declaration::reg[rdNow] = declaration::reg[rtNow] >> shamtNow;
-        cout << "srl" << endl;
+        declaration::reg[rdNow] = (unsigned)declaration::reg[rtNow] >> shamtNow;
+        //test << "srl" << endl;
         break;
     case SRA:
 
@@ -270,12 +278,12 @@ void execution::R_type()
         }
 
         declaration::reg[rdNow] = declaration::reg[rtNow] >> shamtNow;
-        cout << "sra" << endl;
+        //test << "sra" << endl;
         break;
     case JR:
 
         declaration::PC = declaration::reg[rsNow];
-        cout << "jr" << endl;
+        //test << "jr" << endl;
         declaration::cycle++;
         return;
 
@@ -299,17 +307,18 @@ void execution::I_type()
     case ADDI:
 
         overflow = declaration::reg[rsNow] + immediateSigned;
-        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow < 0 )
+        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow <= 0 )
             declaration::numberOverflow = 1;
-        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow > 0 )
+        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow >= 0 )
             declaration::numberOverflow = 1;
         if( rtNow == 0 ){
             declaration::writeToZero = 1;
             break;
         }
 
+
         declaration::reg[rtNow] = declaration::reg[rsNow] + immediateSigned;
-        cout << "addi" << endl;
+        //test << "addi" << endl;
         break;
 
     case ADDIU:
@@ -320,37 +329,49 @@ void execution::I_type()
         }
 
 
-        declaration::reg[rtNow] = declaration::reg[rsNow] + immediateNow;
-        cout << "addiu" << endl;
+        declaration::reg[rtNow] = declaration::reg[rsNow] + immediateSigned;
+        //test << "addiu" << endl;
         break;
 
     case LW:
         {
 
 
-        overflow = declaration::reg[rsNow] + immediateSigned + 3;
-        if( overflow >= 1024 ){
-            declaration::memoryOverflow = 1;
-            declaration::halt = 1;
-        }
         overflow = declaration::reg[rsNow] + immediateSigned;
+        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow <= 0 )
+            declaration::numberOverflow = 1;
+        else if ( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow >= 0 )
+            declaration::numberOverflow = 1;
+
         if( overflow % 4 != 0 ){
             declaration::dataMisalign = 1;
             declaration::halt = 1;
         }
-        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow < 0 )
-            declaration::numberOverflow = 1;
-        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow > 0 )
-            declaration::numberOverflow = 1;
-        if( rtNow == 0 ){
-            declaration::writeToZero = 1;
-            break;
+
+
+        overflow = declaration::reg[rsNow] + immediateSigned;
+        if( overflow >= 1024 || overflow < 0 ){
+            declaration::memoryOverflow = 1;
+            declaration::halt = 1;
+        }
+        overflow = declaration::reg[rsNow] + immediateSigned + 3;
+        if( overflow >= 1024 || overflow < 0 ){
+            declaration::memoryOverflow = 1;
+            declaration::halt = 1;
         }
 
+
+        if( rtNow == 0 ){
+            declaration::writeToZero = 1;
+        }
+
+        if( declaration::writeToZero == 1 || declaration::memoryOverflow == 1 || declaration::dataMisalign == 1 )
+            break;
 
         int idx = 0;
         bitset<32> tmp;
         int idy = declaration::reg[rsNow] + immediateSigned + 3;
+
         for( int i = 0; i < 32; i++ )
         {
             tmp[i] = declaration::dMemory[idy][idx];
@@ -362,7 +383,7 @@ void execution::I_type()
             }
         }
         declaration::reg[rtNow] = (unsigned) ( tmp.to_ulong() );
-        cout << "lw" << endl;
+        //test << "lw" << endl;
         break;
     }
 
@@ -370,24 +391,38 @@ void execution::I_type()
     {
 
 
-        overflow = declaration::reg[rsNow] + immediateSigned + 1;
-        if( overflow >= 1024 ){
-            declaration::memoryOverflow = 1;
-            declaration::halt = 1;
-        }
+
         overflow = declaration::reg[rsNow] + immediateSigned;
+        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow <= 0 )
+            declaration::numberOverflow = 1;
+        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow >= 0 )
+            declaration::numberOverflow = 1;
+
         if( overflow % 2 != 0 ){
             declaration::dataMisalign = 1;
             declaration::halt = 1;
         }
-        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow < 0 )
-            declaration::numberOverflow = 1;
-        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow > 0 )
-            declaration::numberOverflow = 1;
+
+        overflow = declaration::reg[rsNow] + immediateSigned;
+        if( overflow >= 1024 || overflow < 0 ){
+            declaration::memoryOverflow = 1;
+            declaration::halt = 1;
+        }
+        overflow = declaration::reg[rsNow] + immediateSigned + 1;
+        if( overflow >= 1024 || overflow < 0 ){
+            declaration::memoryOverflow = 1;
+            declaration::halt = 1;
+        }
+
         if( rtNow == 0 ){
             declaration::writeToZero = 1;
-            break;
         }
+
+
+        if( declaration::writeToZero == 1 || declaration::memoryOverflow == 1 || declaration::dataMisalign == 1 )
+            break;
+
+
 
 
         int idx = 0;
@@ -405,31 +440,43 @@ void execution::I_type()
         }
 
         declaration::reg[rtNow] = bitset_to_long(tmp);
-        cout << "lh" << endl;
+        //test << "lh" << endl;
         break;
     }
 
     case LHU:
     {
 
-        overflow = declaration::reg[rsNow] + immediateSigned + 1;
-        if( overflow >= 1024 ){
-            declaration::memoryOverflow = 1;
-            declaration::halt = 1;
-        }
         overflow = declaration::reg[rsNow] + immediateSigned;
+        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow <= 0 )
+            declaration::numberOverflow = 1;
+        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow >= 0 )
+            declaration::numberOverflow = 1;
+
         if( overflow % 2 != 0 ){
             declaration::dataMisalign = 1;
             declaration::halt = 1;
         }
-        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow < 0 )
-            declaration::numberOverflow = 1;
-        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow > 0 )
-            declaration::numberOverflow = 1;
+
+
+        overflow = declaration::reg[rsNow] + immediateSigned;
+        if( overflow >= 1024 || overflow < 0 ){
+            declaration::memoryOverflow = 1;
+            declaration::halt = 1;
+        }
+        overflow = declaration::reg[rsNow] + immediateSigned + 1;
+        if( overflow >= 1024 || overflow < 0 ){
+            declaration::memoryOverflow = 1;
+            declaration::halt = 1;
+        }
+
         if( rtNow == 0 ){
             declaration::writeToZero = 1;
-            break;
         }
+
+
+        if( declaration::writeToZero == 1 || declaration::memoryOverflow == 1 || declaration::dataMisalign == 1 )
+            break;
 
 
         int idx = 0;
@@ -446,7 +493,7 @@ void execution::I_type()
             }
         }
         declaration::reg[rtNow] = (unsigned)( tmp.to_ulong() );
-        cout << "lhu" << endl;
+        //test << "lhu" << endl;
         break;
     }
 
@@ -456,18 +503,22 @@ void execution::I_type()
 
 
         overflow = declaration::reg[rsNow] + immediateSigned;
-        if( overflow >= 1024 ){
+        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow <= 0 )
+            declaration::numberOverflow = 1;
+        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow >= 0 )
+            declaration::numberOverflow = 1;
+
+        if( overflow >= 1024 || overflow < 0 ){
             declaration::memoryOverflow = 1;
             declaration::halt = 1;
         }
-        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow < 0 )
-            declaration::numberOverflow = 1;
-        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow > 0 )
-            declaration::numberOverflow = 1;
+
         if( rtNow == 0 ){
             declaration::writeToZero = 1;
-            break;
         }
+
+        if( declaration::writeToZero == 1 || declaration::memoryOverflow == 1 )
+            break;
 
 
 
@@ -486,7 +537,7 @@ void execution::I_type()
         }
         // signed checked !!!!
         declaration::reg[rtNow] = bitset_to_long(tmp);
-        cout << "lb" << endl;
+        //test << "lb" << endl;
         break;
     }
 
@@ -495,18 +546,22 @@ void execution::I_type()
 
 
         overflow = declaration::reg[rsNow] + immediateSigned;
-        if( overflow >= 1024 ){
+        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow <= 0 )
+            declaration::numberOverflow = 1;
+        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow >= 0 )
+            declaration::numberOverflow = 1;
+
+        if( overflow >= 1024 || overflow < 0){
             declaration::memoryOverflow = 1;
             declaration::halt = 1;
         }
-        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow < 0 )
-            declaration::numberOverflow = 1;
-        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow > 0 )
-            declaration::numberOverflow = 1;
+
         if( rtNow == 0 ){
             declaration::writeToZero = 1;
-            break;
         }
+
+        if( declaration::writeToZero == 1 || declaration::memoryOverflow == 1 )
+            break;
 
 
 
@@ -524,15 +579,20 @@ void execution::I_type()
             }
         }
         declaration::reg[rtNow] = (unsigned)( tmp.to_ulong() );
-        cout << "lbu" << endl;
+        //test << "lbu" << endl;
         break;
     }
 
     case SW:
     {
 
+        overflow = declaration::reg[rsNow] + immediateSigned;
+        if( overflow >= 1024 || overflow < 0 ){
+            declaration::memoryOverflow = 1;
+            declaration::halt = 1;
+        }
         overflow = declaration::reg[rsNow] + immediateSigned + 3;
-        if( overflow >= 1024 ){
+        if( overflow >= 1024 || overflow < 0){
             declaration::memoryOverflow = 1;
             declaration::halt = 1;
         }
@@ -541,12 +601,14 @@ void execution::I_type()
             declaration::dataMisalign = 1;
             declaration::halt = 1;
         }
-        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow < 0 )
+        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow <= 0 )
             declaration::numberOverflow = 1;
-        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow > 0 )
+        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow >= 0 )
             declaration::numberOverflow = 1;
 
 
+        if( declaration::memoryOverflow == 1 || declaration::dataMisalign == 1 )
+            break;
 
         int idx = 0;
         bitset<32>tmp( declaration::reg[rtNow] );
@@ -561,15 +623,20 @@ void execution::I_type()
                 idy--;
             }
         }
-        cout << "sw" << endl;
+        //test << "sw" << endl;
         break;
     }
 
     case SH:
     {
 
+        overflow = declaration::reg[rsNow] + immediateSigned;
+        if( overflow >= 1024 || overflow < 0 ){
+            declaration::memoryOverflow = 1;
+            declaration::halt = 1;
+        }
         overflow = declaration::reg[rsNow] + immediateSigned + 1;
-        if( overflow >= 1024 ){
+        if( overflow >= 1024 || overflow < 0 ){
             declaration::memoryOverflow = 1;
             declaration::halt = 1;
         }
@@ -578,10 +645,14 @@ void execution::I_type()
             declaration::dataMisalign = 1;
             declaration::halt = 1;
         }
-        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow < 0 )
+        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow <= 0 )
             declaration::numberOverflow = 1;
-        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow > 0 )
+        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow >= 0 )
             declaration::numberOverflow = 1;
+
+
+        if( declaration::memoryOverflow == 1 || declaration::dataMisalign == 1 )
+            break;
 
 
         int idx = 0;
@@ -597,7 +668,7 @@ void execution::I_type()
                 idy--;
             }
         }
-        cout << "sh" << endl;
+        //test << "sh" << endl;
         break;
     }
 
@@ -605,14 +676,18 @@ void execution::I_type()
     {
 
         overflow = declaration::reg[rsNow] + immediateSigned;
-        if( overflow >= 1024 ){
+        if( overflow >= 1024 || overflow < 0 ){
             declaration::memoryOverflow = 1;
             declaration::halt = 1;
         }
-        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow < 0 )
+        if( declaration::reg[rsNow] > 0 && immediateSigned > 0 && overflow <= 0 )
             declaration::numberOverflow = 1;
-        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow > 0 )
+        else if( declaration::reg[rsNow] < 0 && immediateSigned < 0 && overflow >= 0 )
             declaration::numberOverflow = 1;
+
+
+        if( declaration::memoryOverflow == 1 )
+            break;
 
 
         int idx = 0;
@@ -628,7 +703,7 @@ void execution::I_type()
                 idy--;
             }
         }
-        cout << "sb" << endl;
+        //test << "sb" << endl;
         break;
     }
 
@@ -640,7 +715,7 @@ void execution::I_type()
         }
 
         declaration::reg[rtNow] = immediateNow << 16;
-        cout << "lui" << endl;
+        //test << "lui" << endl;
         break;
 
     case ANDI:
@@ -651,7 +726,7 @@ void execution::I_type()
         }
 
         declaration::reg[rtNow] = declaration::reg[rsNow]  & immediateNow;
-        cout << "andi" << endl;
+        //test << "andi" << endl;
         break;
 
     case ORI:
@@ -662,7 +737,7 @@ void execution::I_type()
         }
 
         declaration::reg[rtNow]  =  declaration::reg[rsNow]  | immediateNow;
-        cout << "ori" << endl;
+        //test << "ori" << endl;
         break;
 
     case NORI:
@@ -673,7 +748,7 @@ void execution::I_type()
         }
 
         declaration::reg[rtNow]  = ~(  declaration::reg[rsNow] | immediateNow );
-        cout << "nori" << endl;
+        //test << "nori" << endl;
         break;
 
     case SLTI:
@@ -683,7 +758,7 @@ void execution::I_type()
         }
 
         declaration::reg[rtNow]  = declaration::reg[rsNow]  < immediateSigned;
-        cout << "slti" << endl;
+        //test << "slti" << endl;
         break;
 
     case BEQ:
@@ -691,10 +766,10 @@ void execution::I_type()
         {
             declaration::PC = declaration::PC + 4 + 4 * immediateSigned;
             declaration::cycle++;
-            cout << "beq" << endl;
+            //test << "beq" << endl;
             return;
         }
-        cout << "beq" << endl;
+        //test << "beq" << endl;
         break;
 
     case BNE:
@@ -702,21 +777,22 @@ void execution::I_type()
         {
             declaration::PC = declaration::PC + 4 + 4 * immediateSigned;
             declaration::cycle++;
-            cout << "bne" << endl;
+            //test << "bne" << endl;
             return;
         }
-        cout << "bne" << endl;
+        //test << "bne" << endl;
         break;
 
     case BGTZ:
-        if( (int)declaration::reg[rtNow] > 0 )
+
+        if( declaration::reg[rsNow] > 0 )
         {
             declaration::PC = declaration::PC + 4 + 4 * immediateSigned;
             declaration::cycle++;
-            cout << "bgtz" << endl;
+            //test << "bgtz" << endl;
             return;
         }
-        cout << "bgtz" << endl;
+        //test << "bgtz" << endl;
         break;
 
     }
@@ -733,12 +809,12 @@ void execution::J_type()
     {
     case J :
         declaration::PC = ( ( declaration::PC + 4 ) >> 28 << 28 ) | ( 4 * addressNow );
-        cout << "j" << endl;
+        //test << "j" << endl;
         break;
     case JAL :
         declaration::reg[31] = declaration::PC + 4;
         declaration::PC = ( ( declaration::PC + 4 ) >> 28 << 28 ) | ( 4 * addressNow );
-        cout << "jal" << endl;
+        //test << "jal" << endl;
         break;
     }
 
@@ -747,7 +823,7 @@ void execution::J_type()
 }
 void execution::terminal_type()
 {
-    cout << "halt" << endl;
+    //test << "halt" << endl;
     declaration::halt = 1;
 }
 

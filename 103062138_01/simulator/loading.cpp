@@ -7,7 +7,7 @@ loading::loading()
 
 void loading::load()
 {
-    /*****    deal with file I/O    *****/
+    /****    deal with file I/O    *****/
     char input1_name[] = "iimage.bin", input2_name[] = "dimage.bin";
     fstream input1, input2;
 
@@ -36,6 +36,7 @@ void loading::load()
     bitset<32> buff;
     int idx = 0;
     readCount = 0;
+    numberToRead = -1;
     while( input1.read( (char *)&buff , sizeof(int) ) != NULL ){
             /*****   convert little-endian to big-endian  *****/
             int big = 0, little = 24;
@@ -57,20 +58,24 @@ void loading::load()
             else{
                 declaration::iMemory[idx] = iimage;
                 idx++;
+                numberToRead--;
             }
             readCount++;
-            //test << iimage << endl;
+            if( numberToRead == 0 )
+                break;
+            //cout << iimage << endl;
 
     }
 
-    //test << PC << endl;
-    //test << numberToRead << endl;
-    /*for( int i = 0; i < numberToRead; i++ )
-        cout << declaration::iMemory[i + ( declaration::PC >> 2 ) ] << endl;*/
+    /*test << PC << endl;
+    test << numberToRead << endl;
+    for( int i = 0; i < numberToRead; i++ )
+        test << declaration::iMemory[i + ( declaration::PC >> 2 ) ] << endl;*/
 
     int idy = 0;
     idx = 0;
     readCount = 0;
+    numberToRead = -1;
     while( input2.read( (char *)&buff , sizeof(int) ) != NULL ){
             /******   convert little-endian to big-endian *****/
             int big = 0, little = 24;
@@ -100,15 +105,19 @@ void loading::load()
                     }
                 }
 
+                numberToRead--;
+
             }
             readCount++;
+            if( numberToRead == 0 )
+                break;
             //cout << dimage << endl;
     }
 
-    //test << reg[$SP] << endl;
-    //test << numberToRead << endl;
-    /*for( int i = 0; i < numberToRead * 4; i++ )
-        cout << declaration::dMemory[i] << endl;*/
+    /*test << reg[$SP] << endl;
+    test << numberToRead << endl;
+    for( int i = 0; i < numberToRead * 4; i++ )
+        test << declaration::dMemory[i] << endl;*/
 
 
     input1.close();

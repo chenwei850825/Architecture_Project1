@@ -3,6 +3,7 @@
 
 #include<iostream>
 #include<bitset>
+#include<fstream>
 #include"declaration.h"
 #include"constants.h"
 using namespace std;
@@ -21,6 +22,9 @@ class execution
     bitset<16>immediate;
     bitset<26>address;
     int overflow;
+
+    fstream test;
+
 
 public:
     execution();
